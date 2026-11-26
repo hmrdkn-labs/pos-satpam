@@ -89,16 +89,21 @@ describe("release metadata", () => {
     const npmWorkflow = readText(".github/workflows/publish-npm.yml");
     expect(npmWorkflow).toMatch(/tags:\s*\n\s+- ['"]v\*\.\*\.\*['"]/);
     expect(npmWorkflow).toMatch(/id-token:\s*write/);
-    expect(npmWorkflow).toMatch(/npm publish --access public/);
+    expect(npmWorkflow).toMatch(/npm publish --access public --provenance/);
+    expect(npmWorkflow).toMatch(/steps\.exists\.outputs\.exists == 'true'/);
     expect(npmWorkflow).not.toMatch(/NODE_AUTH_TOKEN/);
 
     const registryWorkflow = readText(".github/workflows/publish-mcp-registry.yml");
     expect(registryWorkflow).toMatch(/validate-package-metadata\.mjs --require-built/);
-    expect(registryWorkflow).not.toMatch(/mcp-publisher publish/);
+    expect(registryWorkflow).toMatch(/mcp-publisher login github-oidc/);
+    expect(registryWorkflow).toMatch(/mcp-publisher publish server\.json/);
+    expect(registryWorkflow).toMatch(/steps\.npm\.outputs\.published == 'true'/);
+    expect(registryWorkflow).toMatch(/workflows:\s*\n\s+- publish-npm/);
 
     const containerWorkflow = readText(".github/workflows/publish-container.yml");
     expect(containerWorkflow).toMatch(/workflow_dispatch:/);
-    expect(containerWorkflow).toMatch(/if: github\.ref == 'refs\/heads\/main'/);
+    expect(containerWorkflow).toMatch(/tags:\s*\n\s+- ['"]v\*\.\*\.\*['"]/);
+    expect(containerWorkflow).toMatch(/if: github\.ref == 'refs\/heads\/main' \|\| \(github\.ref_type == 'tag'/);
     expect(containerWorkflow).toMatch(/provenance: mode=max/);
     expect(containerWorkflow).toMatch(/sbom: true/);
     expect(containerWorkflow).toContain(":${{ steps.metadata.outputs.version }}");
@@ -106,7 +111,7 @@ describe("release metadata", () => {
     expect(containerWorkflow).toContain(":sha-${{ github.sha }}");
     expect(containerWorkflow).toContain("verify-published-image.mjs");
     expect(containerWorkflow).not.toMatch(/^\s+pull_request:\s*$/m);
-    expect(containerWorkflow).not.toMatch(/^\s+push:\s*$/m);
+    expect(containerWorkflow).not.toMatch(/branches:/);
     expect(npmWorkflow).not.toMatch(/^\s+pull_request:\s*$/m);
     const validationWorkflow = readText(".github/workflows/validate.yml");
     expect(validationWorkflow).toContain("release:validate -- --require-built");
@@ -159,8 +164,8 @@ describe("release metadata", () => {
       cpSync(join(root, "src"), join(temporary, "src"), { recursive: true });
       writeFileSync(join(temporary, "release-notes.md"), "Release preparation smoke.\n");
 
-      execFileSync(process.execPath, ["scripts/prepare-release.mjs", "--version", "0.3.0", "--date", "2026-07-16", "--notes-file", "release-notes.md"], { cwd: temporary, stdio: "pipe" });
-      execFileSync(process.execPath, ["scripts/validate-package-metadata.mjs", "--tag", "v0.3.0"], { cwd: temporary, stdio: "pipe" });
+      execFileSync(process.execPath, ["scripts/prepare-release.mjs", "--version", "0.99.0", "--date", "2026-07-16", "--notes-file", "release-notes.md"], { cwd: temporary, stdio: "pipe" });
+      execFileSync(process.execPath, ["scripts/validate-package-metadata.mjs", "--tag", "v0.99.0"], { cwd: temporary, stdio: "pipe" });
     } finally {
       rmSync(temporary, { recursive: true, force: true });
     }

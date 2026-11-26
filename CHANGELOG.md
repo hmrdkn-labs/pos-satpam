@@ -7,6 +7,8 @@ are recorded as they were at the time.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-26
+
 - Rename the public TypeScript MCP server to Pos Satpam everywhere: npm package
   `@hmrdkn-labs/pos-satpam`, registry ID `io.github.hmrdkn-labs/pos-satpam`,
   image `ghcr.io/hmrdkn-labs/pos-satpam`, repository URLs and the README badge.
