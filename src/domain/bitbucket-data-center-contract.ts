@@ -350,7 +350,7 @@ export function resolveBitbucketDataCenterUrl(endpoint: CIProviderEndpoint, reso
   if (resourcePath.includes("#") || resourcePath.startsWith("//") || /^[a-z][a-z0-9+.-]*:\/\//i.test(resourcePath)) {
     throw new Error("Bitbucket Data Center request paths must be relative and fragment-free");
   }
-  const request = new URL(resourcePath.startsWith("/") ? resourcePath : `/${resourcePath}`, "https://pak-satpam-request.invalid");
+  const request = new URL(resourcePath.startsWith("/") ? resourcePath : `/${resourcePath}`, "https://pos-satpam-request.invalid");
   const requestPath = normalizePath(request.pathname);
   const apiRelativePath = requestPath === BITBUCKET_DATA_CENTER_API_PATH || requestPath.startsWith(`${BITBUCKET_DATA_CENTER_API_PATH}/`)
     ? requestPath

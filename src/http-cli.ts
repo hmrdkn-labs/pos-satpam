@@ -4,36 +4,45 @@ import process from "node:process";
 import { createObservabilityHttpApp } from "./http/create-http-app.js";
 import { loadRuntimeConfiguration } from "./runtime/load-runtime-configuration.js";
 
-const host = process.env.MCP_HTTP_HOST ?? "127.0.0.1";
-const port = parsePort(process.env.MCP_HTTP_PORT ?? "8765");
-const allowedHosts = requiredEnvironment("MCP_HTTP_ALLOWED_HOSTS")
-  .split(",")
-  .map((value) => value.trim())
-  .filter(Boolean);
-const grafanaTokenPath = optionalEnvironment("GRAFANA_TOKEN_FILE");
-const runtime = loadRuntimeConfiguration({
-  configPath: requiredEnvironment("OBSERVABILITY_PROVIDER_CONFIG"),
-  ...(grafanaTokenPath === undefined ? {} : { grafanaTokenPath }),
-  mcpTokenPath: requiredEnvironment("MCP_TOKEN_FILE"),
-  fetch: globalThis.fetch.bind(globalThis),
-});
-const app = createObservabilityHttpApp({
-  ...(runtime.provider === undefined ? {} : { provider: runtime.provider }),
-  ...(runtime.visualProvider === undefined ? {} : { visualProvider: runtime.visualProvider }),
-  ...(runtime.visualAllowlist === undefined ? {} : { visualAllowlist: runtime.visualAllowlist }),
-  ...(runtime.ci === undefined ? {} : { ci: runtime.ci }),
-  bearerToken: runtime.bearerToken,
-  host,
-  allowedHosts,
-});
+let app: ReturnType<typeof createObservabilityHttpApp>;
+let host: string;
+let port: number;
+try {
+  host = process.env.MCP_HTTP_HOST ?? "127.0.0.1";
+  port = parsePort(process.env.MCP_HTTP_PORT ?? "8765");
+  const allowedHosts = requiredEnvironment("MCP_HTTP_ALLOWED_HOSTS")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+  const grafanaTokenPath = optionalEnvironment("GRAFANA_TOKEN_FILE");
+  const runtime = loadRuntimeConfiguration({
+    configPath: requiredEnvironment("OBSERVABILITY_PROVIDER_CONFIG"),
+    ...(grafanaTokenPath === undefined ? {} : { grafanaTokenPath }),
+    mcpTokenPath: requiredEnvironment("MCP_TOKEN_FILE"),
+    fetch: globalThis.fetch.bind(globalThis),
+  });
+  app = createObservabilityHttpApp({
+    ...(runtime.provider === undefined ? {} : { provider: runtime.provider }),
+    ...(runtime.visualProvider === undefined ? {} : { visualProvider: runtime.visualProvider }),
+    ...(runtime.visualAllowlist === undefined ? {} : { visualAllowlist: runtime.visualAllowlist }),
+    ...(runtime.ci === undefined ? {} : { ci: runtime.ci }),
+    bearerToken: runtime.bearerToken,
+    host,
+    allowedHosts,
+  });
+} catch (error) {
+  const reason = error instanceof Error ? error.message.split("\n")[0] : "invalid configuration";
+  process.stderr.write(`pos-satpam-http: ${reason}\n`);
+  process.exit(2);
+}
 
 const listener = app.listen(port, host, (error?: Error) => {
   if (error !== undefined) {
-    process.stderr.write("observability-agent-mcp HTTP startup failed\n");
+    process.stderr.write("pos-satpam-http: startup failed\n");
     process.exitCode = 1;
     return;
   }
-  process.stderr.write("observability-agent-mcp HTTP transport ready\n");
+  process.stderr.write("pos-satpam-http: transport ready\n");
 });
 
 for (const signal of ["SIGINT", "SIGTERM"] as const) {

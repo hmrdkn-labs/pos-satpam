@@ -16,7 +16,7 @@ const fixture = JSON.parse(readFileSync(join(root, "tests/fixtures/published-ima
 
 describe("published image verification", () => {
   it("ignores unknown/unknown attestation manifests but verifies both attestation formats", () => {
-    const temporary = mkdtempSync(join(tmpdir(), "pak-satpam-image-verifier-"));
+    const temporary = mkdtempSync(join(tmpdir(), "pos-satpam-image-verifier-"));
     const docker = join(temporary, "docker");
     const callLog = join(temporary, "docker-calls.jsonl");
     const version = "0.2.0";
@@ -26,10 +26,10 @@ describe("published image verification", () => {
     expect(manifests.filter(({ platform }) => platform?.os !== "unknown" && platform?.architecture !== "unknown")).toHaveLength(2);
     expect(manifests.filter(({ platform }) => platform?.os === "unknown" && platform?.architecture === "unknown")).toHaveLength(2);
     const references = [
-      `ghcr.io/hmrdkn-labs/pak-satpam@${fixture.digest}`,
-      `ghcr.io/hmrdkn-labs/pak-satpam:${version}`,
-      `ghcr.io/hmrdkn-labs/pak-satpam:v${version}`,
-      `ghcr.io/hmrdkn-labs/pak-satpam:sha-${revision}`,
+      `ghcr.io/hmrdkn-labs/pos-satpam@${fixture.digest}`,
+      `ghcr.io/hmrdkn-labs/pos-satpam:${version}`,
+      `ghcr.io/hmrdkn-labs/pos-satpam:v${version}`,
+      `ghcr.io/hmrdkn-labs/pos-satpam:sha-${revision}`,
     ];
 
     writeFileSync(docker, `#!/usr/bin/env node
@@ -54,7 +54,7 @@ if (args.includes("--raw")) {
     chmodSync(docker, 0o755);
 
     try {
-      const output = execFileSync(process.execPath, ["scripts/verify-published-image.mjs", "ghcr.io/hmrdkn-labs/pak-satpam", fixture.digest, version, revision], {
+      const output = execFileSync(process.execPath, ["scripts/verify-published-image.mjs", "ghcr.io/hmrdkn-labs/pos-satpam", fixture.digest, version, revision], {
         cwd: root,
         env: { ...process.env, DOCKER_CALL_LOG: callLog, PATH: `${temporary}:${process.env.PATH ?? ""}` },
         encoding: "utf8",

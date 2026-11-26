@@ -61,7 +61,7 @@ for path in "${required[@]}"; do
   test -f "$path" || { echo "missing=$path" >&2; exit 1; }
 done
 
-grep -q "# Pak Satpam" README.md
+grep -q "# Pos Satpam" README.md
 grep -q "Version 1 is read-only" docs/security-model.md
 grep -q "Streamable HTTP" docs/client-compatibility.md
 grep -q "WWW-Authenticate" docs/security-model.md

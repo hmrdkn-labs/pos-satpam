@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "pak-satpam": {
+    "pos-satpam": {
       "type": "streamable-http",
       "url": "http://mcp.example.test:8765/mcp",
       "headers": {

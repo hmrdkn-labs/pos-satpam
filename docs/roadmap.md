@@ -12,7 +12,7 @@ publication or private deployment.
 - Private stateless Streamable HTTP and versioned npm/OCI packaging contracts.
 - CI status, failure classification, redacted logs, dry-run remediation, and the
   GitHub approval-gated failed-job rerun.
-- Goal 19 CP3 direct SCM contract, GitHub/Jenkins/Bitbucket Cloud read adapters,
+- Direct SCM contract, GitHub/Jenkins/Bitbucket Cloud read adapters,
   provider-native IDs, bounded telemetry correlation, and observer
   poll/webhook dedupe and stale suppression.
 
@@ -20,7 +20,7 @@ publication or private deployment.
 
 Keep the default read-only boundary. Add capability only with a provider-neutral
 contract, explicit limits, redaction, allowlist enforcement, tests, and an
-operator-owned rollback path. The external AI/Hermes layer remains separate.
+operator-owned rollback path. The external AI/chat-gateway layer remains separate.
 
 ## Deferred
 
@@ -30,7 +30,7 @@ operator-owned rollback path. The external AI/Hermes layer remains separate.
 - Workflow dispatch, cancellation, arbitrary rerun, source writes, deployment,
   alert mutation, dashboard mutation, shell, browser automation, and secret
   retrieval.
-- Live private edge observer/Hermes route publication and deployment.
+- Live private edge observer/chat-gateway route publication and deployment.
 - Hosted multi-tenant service.
 
 ## Release Gate
@@ -38,4 +38,4 @@ operator-owned rollback path. The external AI/Hermes layer remains separate.
 A tagged npm package or immutable OCI image requires authorized release
 workflows, metadata validation, artifact verification, and a recorded digest.
 Private deployment additionally requires private ingress, credential injection,
-provider connectivity, Hermes route verification, and rollback rehearsal.
+provider connectivity, chat-gateway route verification, and rollback rehearsal.

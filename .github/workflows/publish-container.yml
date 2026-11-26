@@ -42,10 +42,10 @@ jobs:
         run: |
           version="$(node -p "require('./package.json').version")"
           echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "repository=ghcr.io/hmrdkn-labs/pak-satpam" >> "$GITHUB_OUTPUT"
+          echo "repository=ghcr.io/hmrdkn-labs/pos-satpam" >> "$GITHUB_OUTPUT"
       - name: Reject existing immutable tags
         env:
-          IMAGE: ghcr.io/hmrdkn-labs/pak-satpam
+          IMAGE: ghcr.io/hmrdkn-labs/pos-satpam
           VERSION: ${{ steps.metadata.outputs.version }}
           REVISION: ${{ github.sha }}
         shell: bash
@@ -78,8 +78,8 @@ jobs:
             VERSION=${{ steps.metadata.outputs.version }}
             VCS_REF=${{ github.sha }}
           tags: |
-            ghcr.io/hmrdkn-labs/pak-satpam:${{ steps.metadata.outputs.version }}
-            ghcr.io/hmrdkn-labs/pak-satpam:v${{ steps.metadata.outputs.version }}
-            ghcr.io/hmrdkn-labs/pak-satpam:sha-${{ github.sha }}
+            ghcr.io/hmrdkn-labs/pos-satpam:${{ steps.metadata.outputs.version }}
+            ghcr.io/hmrdkn-labs/pos-satpam:v${{ steps.metadata.outputs.version }}
+            ghcr.io/hmrdkn-labs/pos-satpam:sha-${{ github.sha }}
       - name: Verify published manifest and attestations
-        run: node scripts/verify-published-image.mjs ghcr.io/hmrdkn-labs/pak-satpam "${{ steps.build.outputs.digest }}" "${{ steps.metadata.outputs.version }}" "${{ github.sha }}"
+        run: node scripts/verify-published-image.mjs ghcr.io/hmrdkn-labs/pos-satpam "${{ steps.build.outputs.digest }}" "${{ steps.metadata.outputs.version }}" "${{ github.sha }}"

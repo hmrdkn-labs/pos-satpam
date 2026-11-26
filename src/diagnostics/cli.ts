@@ -4,7 +4,7 @@ import process from "node:process";
 import { diagnoseRuntimeConfiguration } from "./config-diagnostics.js";
 import { parseDoctorArguments } from "./doctor.js";
 
-export const DOCTOR_USAGE = "Usage: pak-satpam-doctor --config PATH --mcp-token PATH [--grafana-token PATH]";
+export const DOCTOR_USAGE = "Usage: pos-satpam-doctor --config PATH --mcp-token PATH [--grafana-token PATH]";
 
 try {
   if (process.argv.length === 3 && process.argv[2] === "--help") {

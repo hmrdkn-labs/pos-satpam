@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 
 const [repository, digest, version, revision] = process.argv.slice(2);
-assert(repository === "ghcr.io/hmrdkn-labs/pak-satpam", "repository must be the canonical OCI identity");
+assert(repository === "ghcr.io/hmrdkn-labs/pos-satpam", "repository must be the canonical OCI identity");
 assert(/^sha256:[0-9a-f]{64}$/.test(digest), "manifest digest must be sha256");
 assert(version && isVersion(version), "version must be a strict semantic version");
 assert(revision && /^[0-9a-f]{40}$/.test(revision), "revision must be a full commit SHA");

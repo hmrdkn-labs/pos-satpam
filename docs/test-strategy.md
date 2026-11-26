@@ -40,7 +40,7 @@ smoke for linux/amd64 and linux/arm64. The workflow does not publish or deploy.
   selection, delivery retry, payload truncation, and metadata-only state.
 - Transport tests cover stdio, Streamable HTTP, bearer denial, Host denial,
   MCP initialization, tool discovery, and read-only calls.
-- Package and metadata tests cover npm identity, aliases, OCI identity,
+- Package and metadata tests cover npm identity, executables, OCI identity,
   Inspector discovery, installed-package launch, strict semantic version and
   changelog consistency, immutable OCI tags, and post-publish attestation
   verification wiring.

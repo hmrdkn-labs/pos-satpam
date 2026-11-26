@@ -23,6 +23,8 @@ import {
 } from "../domain/tool-schemas.js";
 import type { Clock, ObservabilityProvider } from "./observability-provider.js";
 
+export const DEMO_DATA_NOTICE = "demo data: no provider configured";
+
 const ALERT_STARTED_AT = "2026-07-09T23:30:00.000Z";
 
 export class FakeObservabilityProvider implements ObservabilityProvider {
@@ -144,6 +146,7 @@ export class FakeObservabilityProvider implements ObservabilityProvider {
       schemaVersion: SCHEMA_VERSION,
       observedAt,
       providerClass: "fake" as const,
+      notice: DEMO_DATA_NOTICE,
       freshness: "fresh" as const,
       truncated: false,
       redactionsApplied: false,

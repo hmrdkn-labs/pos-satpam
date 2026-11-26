@@ -1,6 +1,6 @@
 # Operator Runbook
 
-This runbook covers an external operator installing a private Pak Satpam
+This runbook covers an external operator installing a private Pos Satpam
 instance. It does not publish artifacts, deploy infrastructure, or grant
 provider access.
 
@@ -21,14 +21,15 @@ declared read capability. Only GitHub declares approval-gated rerun capability.
 
 ## Start And Verify
 
-For npm, install the package locally and launch pak-satpam for stdio or
-pak-satpam-http for private HTTP. For OCI, use the pinned digest and the
+From source, run node dist/cli.js for stdio or node dist/http-cli.js for private
+HTTP. For npm (from v0.3.0), install the package locally and launch pos-satpam
+or pos-satpam-http. For OCI, use the pinned digest and the
 Containerfile entrypoint. Mount runtime files read-only.
 
 Before HTTP startup:
 
 ~~~bash
-npx pak-satpam-doctor \
+node dist/diagnostics/cli.js \
   --config /private/path/provider-config.yml \
   --mcp-token /private/path/mcp-token \
   --grafana-token /private/path/grafana-token
@@ -60,8 +61,8 @@ nonce, and a maximum 300-second TTL. Jenkins and Bitbucket never expose rerun.
 
 For the observer, monitor /healthz and /metrics. Investigate degraded health,
 truncated targets, stale suppression, provider errors, delivery failures, and
-backoff before changing configuration. Hermes or another external AI service
-owns prompts and chat; it is not a Pak Satpam capability.
+backoff before changing configuration. A chat gateway or another external AI service
+owns prompts and chat; it is not a Pos Satpam capability.
 
 ## Rollback
 
@@ -70,7 +71,7 @@ owns prompts and chat; it is not a Pak Satpam capability.
 3. Reuse the same private configuration and file paths.
 4. Repeat liveness, authorization, MCP discovery, and one read-only call.
 5. Confirm observer state remains readable and duplicate events remain suppressed.
-6. Escalate provider-side changes separately; Pak Satpam has no provider rollback
+6. Escalate provider-side changes separately; Pos Satpam has no provider rollback
    or deployment authority.
 
 Delete or migrate observer state only through an explicitly reviewed state-schema
@@ -83,6 +84,6 @@ A passing local gate proves source compatibility, not publication or deployment.
 Before calling a release live, an authorized maintainer must publish the npm
 package or OCI image, record the immutable reference, and hand it to the private
 deployment owner. The deployment owner must separately prove private ingress,
-credential injection, provider connectivity, Hermes route reachability, and
+credential injection, provider connectivity, chat-gateway route reachability, and
 rollback. Public HTTP remains blocked by the missing OAuth and multi-principal
 authorization boundary.

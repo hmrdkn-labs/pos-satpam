@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-builder="${BUILDX_BUILDER:-pak-satpam-ci}"
+builder="${BUILDX_BUILDER:-pos-satpam-ci}"
 version="$(node -p "require('./package.json').version")"
 revision="${GITHUB_SHA:-$(git rev-parse HEAD)}"
 created=false
@@ -25,7 +25,7 @@ docker buildx build \
   --file Containerfile \
   --build-arg "VERSION=$version" \
   --build-arg "VCS_REF=$revision" \
-  --tag "ghcr.io/hmrdkn-labs/pak-satpam:ci-$revision" \
+  --tag "ghcr.io/hmrdkn-labs/pos-satpam:ci-$revision" \
   --provenance=false \
   --sbom=false \
   --output type=cacheonly \

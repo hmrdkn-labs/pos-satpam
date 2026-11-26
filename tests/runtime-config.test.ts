@@ -16,7 +16,7 @@ describe("private runtime configuration", () => {
   let mcpTokenPath: string;
 
   beforeEach(() => {
-    directory = mkdtempSync(join(tmpdir(), "observability-agent-mcp-runtime-"));
+    directory = mkdtempSync(join(tmpdir(), "pos-satpam-runtime-"));
     configPath = join(directory, "provider-config.yml");
     grafanaTokenPath = join(directory, "grafana-token");
     mcpTokenPath = join(directory, "mcp-token");
@@ -409,6 +409,6 @@ ci:
     base_url: https://jenkins.example
   approval:
     key_file: APPROVAL_KEY_FILE
-    replay_file: /tmp/pak-satpam-replay.jsonl
-    audit_file: /tmp/pak-satpam-audit.jsonl
+    replay_file: /tmp/pos-satpam-replay.jsonl
+    audit_file: /tmp/pos-satpam-audit.jsonl
 `;

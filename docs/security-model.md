@@ -65,7 +65,7 @@ server linkage, issuer/audience/expiry/scope validation, Origin policy,
 concurrent-client isolation, reconnect coverage, and a separate tenant review.
 
 The inbound MCP bearer is used only for MCP authorization. It is never forwarded
-to Grafana, metrics, CI, SCM, Hermes, or another MCP server. Provider
+to Grafana, metrics, CI, SCM, a chat gateway, or another MCP server. Provider
 credentials are separate runtime inputs with least-privilege policy.
 
 ## CI Approval Boundary

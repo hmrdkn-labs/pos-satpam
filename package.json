@@ -1,15 +1,15 @@
 {
-  "name": "@hmrdkn-labs/pak-satpam",
+  "name": "@hmrdkn-labs/pos-satpam",
   "version": "0.2.5",
-  "description": "Pak Satpam: bounded observability and approval-gated CI evidence for AI agents",
-  "mcpName": "io.github.hmrdkn-labs/pak-satpam",
+  "description": "Pos Satpam: bounded observability and approval-gated CI evidence for AI agents",
+  "mcpName": "io.github.hmrdkn-labs/pos-satpam",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hmrdkn-labs/pak-satpam.git"
+    "url": "git+https://github.com/hmrdkn-labs/pos-satpam.git"
   },
-  "homepage": "https://github.com/hmrdkn-labs/pak-satpam#readme",
+  "homepage": "https://github.com/hmrdkn-labs/pos-satpam#readme",
   "bugs": {
-    "url": "https://github.com/hmrdkn-labs/pak-satpam/issues"
+    "url": "https://github.com/hmrdkn-labs/pos-satpam/issues"
   },
   "type": "module",
   "main": "./dist/index.js",
@@ -40,13 +40,11 @@
   "license": "Apache-2.0",
   "private": false,
   "bin": {
-    "observability-agent-mcp": "dist/cli.js",
-    "observability-agent-mcp-observer": "dist/observer/cli.js",
-    "observability-agent-mcp-approval": "dist/approval-cli.js",
-    "observability-agent-mcp-approve": "dist/approval-cli.js",
-    "pak-satpam": "dist/cli.js",
-    "pak-satpam-http": "dist/http-cli.js",
-    "pak-satpam-doctor": "dist/diagnostics/cli.js"
+    "pos-satpam": "dist/cli.js",
+    "pos-satpam-observer": "dist/observer/cli.js",
+    "pos-satpam-approval": "dist/approval-cli.js",
+    "pos-satpam-http": "dist/http-cli.js",
+    "pos-satpam-doctor": "dist/diagnostics/cli.js"
   },
   "files": [
     "dist",
@@ -78,9 +76,9 @@
     "approval": "node dist/approval-cli.js",
     "validate": "npm run typecheck && npm test && npm run build && npm run test:stdio && npm run inspector:list && npm run package:smoke && npm run audit && ./ci/validate-foundation.sh",
     "start": "node dist/cli.js",
-    "container:build": "docker build --file Containerfile --build-arg VERSION=$(node -p \"require('./package.json').version\") --build-arg VCS_REF=$(git rev-parse HEAD) --tag observability-agent-mcp:local .",
+    "container:build": "docker build --file Containerfile --build-arg VERSION=$(node -p \"require('./package.json').version\") --build-arg VCS_REF=$(git rev-parse HEAD) --tag pos-satpam:local .",
     "container:build:multiarch": "./ci/build-multiarch.sh",
-    "container:smoke": "bash scripts/container-smoke.sh observability-agent-mcp:local"
+    "container:smoke": "bash scripts/container-smoke.sh pos-satpam:local"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.32.2",

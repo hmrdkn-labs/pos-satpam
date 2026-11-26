@@ -7,7 +7,7 @@ It turns allowlisted terminal GitHub Actions runs into signed internal events.
 GitHub Actions -> bounded poll or verified workflow_run webhook
                -> metadata-only lease/cursor/dedupe state
                -> red failure status / one-shot analysis / green recovery
-                  (external agent may call Pak Satpam read tools)
+                  (external agent may call Pos Satpam read tools)
 ~~~
 
 ## Inputs
@@ -55,7 +55,7 @@ repository:workflow
 Legacy version-1 records keyed by provider run ID remain readable and are
 aliased to the SHA/conclusion identity on first observation.
 
-## Goal 20 Notification Policy
+## Notification Policy
 
 Fresh `failure`, `cancelled`, `timed_out`, and `action_required` conclusions
 emit one concise red status notification first. They may then perform at most
@@ -104,5 +104,5 @@ lease. Poll/page/payload/retry values have strict schema maximums.
 Production deployment owns binding, credentials, allowlists, routes, restart
 policy, resource limits, digest pinning, and rollback. Roll back to the prior
 observer image/package with the same config and metadata state; do not delete
-state during a normal rollback. The private edge observer and Hermes route are
+state during a normal rollback. The private edge observer and chat-gateway route are
 not live merely because this companion is packaged.
