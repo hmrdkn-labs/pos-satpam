@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.hmrdkn-labs/pos-satpam",
   "title": "Pos Satpam",
-  "description": "Bounded observability and approval-gated CI evidence for AI agents.",
+  "description": "Capped, cited CI-failure evidence for coding agents. Read-only, one approval-gated rerun.",
   "repository": {
     "url": "https://github.com/hmrdkn-labs/pos-satpam",
     "source": "github"

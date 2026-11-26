@@ -1,7 +1,7 @@
 {
   "name": "@hmrdkn-labs/pos-satpam",
   "version": "0.3.0",
-  "description": "Pos Satpam: bounded observability and approval-gated CI evidence for AI agents",
+  "description": "Pos Satpam: capped, cited CI-failure evidence for coding agents. Read-only, one approval-gated rerun. Observability tools also included.",
   "mcpName": "io.github.hmrdkn-labs/pos-satpam",
   "repository": {
     "type": "git",
