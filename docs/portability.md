@@ -1,36 +1,38 @@
 # Installation And Portability
 
-Pak Satpam keeps one MCP schema contract across npm, OCI, stdio, and private
+Pos Satpam keeps one MCP schema contract across npm, OCI, stdio, and private
 Streamable HTTP. The supported runtime is Node.js 22 or newer.
 
 ## Distribution Matrix
 
 | Distribution | Launch | Platforms | Current condition |
 | --- | --- | --- | --- |
-| npm package @hmrdkn-labs/pak-satpam | pak-satpam or pak-satpam-http | Node.js 22, Linux amd64/arm64 | package contract implemented; publication requires authorized release |
-| OCI image ghcr.io/hmrdkn-labs/pak-satpam | node dist/cli.js or node dist/http-cli.js | linux/amd64 and linux/arm64 | image contract and non-publishing Buildx gates implemented; publication/deploy not proven here |
-| npm package or OCI image | observability-agent-mcp-observer | Node.js 22, Linux amd64/arm64 | optional observer companion; private deployment required |
+| npm package @hmrdkn-labs/pos-satpam | pos-satpam or pos-satpam-http | Node.js 22, Linux amd64/arm64 | package contract implemented; not published yet, planned from v0.3.0 |
+| OCI image ghcr.io/hmrdkn-labs/pos-satpam | node dist/cli.js or node dist/http-cli.js | linux/amd64 and linux/arm64 | image contract and non-publishing Buildx gates implemented; publication/deploy not proven here |
+| npm package or OCI image | pos-satpam-observer | Node.js 22, Linux amd64/arm64 | optional observer companion; private deployment required |
 
-The compatibility identities are package @hmrdkn-labs/pak-satpam, MCP name
-io.github.hmrdkn-labs/pak-satpam, schema version 1.0, the preserved
-observability-agent-mcp aliases, and the OCI repository
-ghcr.io/hmrdkn-labs/pak-satpam. A release process must provide an immutable
+The compatibility identities are package @hmrdkn-labs/pos-satpam, MCP name
+io.github.hmrdkn-labs/pos-satpam, schema version 1.0, the
+pos-satpam executables, and the OCI repository
+ghcr.io/hmrdkn-labs/pos-satpam. A release process must provide an immutable
 version or digest. This documentation does not claim that an artifact has been
 published.
 
 ## npm And Stdio
 
+Available from v0.3.0; the package is not on the registry before then.
+
 ~~~bash
-mkdir pak-satpam-runtime
-cd pak-satpam-runtime
+mkdir pos-satpam-runtime
+cd pos-satpam-runtime
 npm init -y
-npm install @hmrdkn-labs/pak-satpam
-npm exec -- pak-satpam
+npm install @hmrdkn-labs/pos-satpam
+npm exec -- pos-satpam
 ~~~
 
-The stdio server does not open a network listener and uses the deterministic
-local provider. A client launches the executable and owns its stdin/stdout
-lifecycle. The installed package also exposes the HTTP and doctor aliases.
+The stdio server does not open a network listener and serves labelled
+demo data from a deterministic fake provider. A client launches the executable and owns its stdin/stdout
+lifecycle. The installed package also exposes the HTTP and doctor executables.
 
 For a source checkout:
 
@@ -91,7 +93,7 @@ The Containerfile builds a non-root Node.js image with entrypoint node and
 default command dist/cli.js:
 
 ~~~bash
-docker run --rm -i ghcr.io/hmrdkn-labs/pak-satpam@sha256:<immutable-digest>
+docker run --rm -i ghcr.io/hmrdkn-labs/pos-satpam@sha256:<immutable-digest>
 ~~~
 
 For HTTP, select dist/http-cli.js and mount the configuration and 0600 files
@@ -102,8 +104,8 @@ publishing, then runs per-platform runtime smoke where the host supports it.
 The OCI default command is also exercised as real MCP stdio on both platforms:
 
 ~~~bash
-docker run --rm -i --platform linux/amd64 ghcr.io/hmrdkn-labs/pak-satpam@sha256:<immutable-digest>
-docker run --rm -i --platform linux/arm64 ghcr.io/hmrdkn-labs/pak-satpam@sha256:<immutable-digest>
+docker run --rm -i --platform linux/amd64 ghcr.io/hmrdkn-labs/pos-satpam@sha256:<immutable-digest>
+docker run --rm -i --platform linux/arm64 ghcr.io/hmrdkn-labs/pos-satpam@sha256:<immutable-digest>
 ~~~
 
 For local validation, `./scripts/container-runtime-smoke.sh` builds each

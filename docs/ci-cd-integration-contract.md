@@ -1,8 +1,8 @@
 # CI/CD Integration Contract
 
-This contract connects bounded CI evidence to an external event loop. Pak Satpam
+This contract connects bounded CI evidence to an external event loop. Pos Satpam
 is the evidence and approval boundary. The caller, observer deployment, or
-Hermes route owns polling/delivery lifecycle and chat behavior.
+chat-gateway route owns polling/delivery lifecycle and chat behavior.
 
 ~~~text
 observe -> classify -> bounded redacted evidence -> dry-run plan

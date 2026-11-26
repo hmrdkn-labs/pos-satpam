@@ -9,7 +9,7 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import { assertToolSurface } from "./assert-tool-surface.mjs";
 
 const root = process.cwd();
-const temporary = mkdtempSync(join(tmpdir(), "observability-agent-mcp-package-"));
+const temporary = mkdtempSync(join(tmpdir(), "pos-satpam-package-"));
 
 try {
   const packed = JSON.parse(
@@ -29,7 +29,7 @@ try {
     temporary,
     "node_modules",
     "@hmrdkn-labs",
-    "pak-satpam",
+    "pos-satpam",
   );
   const module = await import(pathToFileURL(join(installedRoot, "dist", "index.js")).href);
   assert.equal(typeof module.createObservabilityServer, "function");
@@ -37,14 +37,14 @@ try {
   const observerModule = await import(pathToFileURL(join(installedRoot, "dist", "observer", "index.js")).href);
   assert.equal(typeof observerModule.ObserverRuntime, "function");
 
-  const bin = join(temporary, "node_modules", ".bin", "observability-agent-mcp");
+  const bin = join(temporary, "node_modules", ".bin", "pos-satpam");
   assert(statSync(bin).isFile());
-  assert(statSync(join(temporary, "node_modules", ".bin", "observability-agent-mcp-observer")).isFile());
-  assert(statSync(join(temporary, "node_modules", ".bin", "pak-satpam")).isFile());
-  assert(statSync(join(temporary, "node_modules", ".bin", "pak-satpam-http")).isFile());
-  const doctorBin = join(temporary, "node_modules", ".bin", "pak-satpam-doctor");
+  assert(statSync(join(temporary, "node_modules", ".bin", "pos-satpam-observer")).isFile());
+  assert(statSync(join(temporary, "node_modules", ".bin", "pos-satpam")).isFile());
+  assert(statSync(join(temporary, "node_modules", ".bin", "pos-satpam-http")).isFile());
+  const doctorBin = join(temporary, "node_modules", ".bin", "pos-satpam-doctor");
   assert(statSync(doctorBin).isFile());
-  assert.match(execFileSync(doctorBin, ["--help"], { encoding: "utf8" }), /Usage: pak-satpam-doctor/);
+  assert.match(execFileSync(doctorBin, ["--help"], { encoding: "utf8" }), /Usage: pos-satpam-doctor/);
   const transport = new StdioClientTransport({ command: bin, stderr: "pipe" });
   const client = new Client({ name: "installed-package-smoke", version: "1.0.0" });
   try {

@@ -34,21 +34,20 @@ const serverJson = readJson("server.json") as {
   }>;
 };
 
-const legacyBins = {
-  "observability-agent-mcp": "dist/cli.js",
-  "observability-agent-mcp-observer": "dist/observer/cli.js",
-  "observability-agent-mcp-approval": "dist/approval-cli.js",
-  "observability-agent-mcp-approve": "dist/approval-cli.js",
+const requiredBins = {
+  "pos-satpam": "dist/cli.js",
+  "pos-satpam-observer": "dist/observer/cli.js",
+  "pos-satpam-approval": "dist/approval-cli.js",
 };
 
 describe("release metadata", () => {
-  it("uses one Pak Satpam package identity everywhere", () => {
+  it("uses one Pos Satpam package identity everywhere", () => {
     expect(packageJson.name).toBe(PACKAGE_NAME);
     expect(packageJson.version).toBe(VERSION);
     expect(packageJson.mcpName).toBe(MCP_NAME);
-    expect(packageJson.repository.url).toBe("git+https://github.com/hmrdkn-labs/pak-satpam.git");
-    expect(packageJson.homepage).toBe("https://github.com/hmrdkn-labs/pak-satpam#readme");
-    expect(packageJson.bugs.url).toBe("https://github.com/hmrdkn-labs/pak-satpam/issues");
+    expect(packageJson.repository.url).toBe("git+https://github.com/hmrdkn-labs/pos-satpam.git");
+    expect(packageJson.homepage).toBe("https://github.com/hmrdkn-labs/pos-satpam#readme");
+    expect(packageJson.bugs.url).toBe("https://github.com/hmrdkn-labs/pos-satpam/issues");
 
     expect(packageLock.name).toBe(PACKAGE_NAME);
     expect(packageLock.version).toBe(VERSION);
@@ -57,11 +56,11 @@ describe("release metadata", () => {
     expect(packageLock.packages[""].bin).toEqual(packageJson.bin);
   });
 
-  it("preserves legacy bins and only exposes built entrypoint aliases", () => {
-    expect(packageJson.bin).toMatchObject(legacyBins);
-    expect(packageJson.bin["pak-satpam"]).toBe("dist/cli.js");
-    expect(packageJson.bin["pak-satpam-http"]).toBe("dist/http-cli.js");
-    expect(packageJson.bin["pak-satpam-doctor"]).toBe("dist/diagnostics/cli.js");
+  it("exposes only built entrypoint aliases", () => {
+    expect(packageJson.bin).toMatchObject(requiredBins);
+    expect(packageJson.bin["pos-satpam"]).toBe("dist/cli.js");
+    expect(packageJson.bin["pos-satpam-http"]).toBe("dist/http-cli.js");
+    expect(packageJson.bin["pos-satpam-doctor"]).toBe("dist/diagnostics/cli.js");
 
     for (const target of Object.values(packageJson.bin)) {
       const source = target.replace(/^dist\//, "src/").replace(/\.js$/, ".ts");
@@ -72,7 +71,7 @@ describe("release metadata", () => {
   it("uses the official npm package shape for MCP Registry metadata", () => {
     expect(serverJson.name).toBe(MCP_NAME);
     expect(serverJson.version).toBe(VERSION);
-    expect(serverJson.repository).toEqual({ url: "https://github.com/hmrdkn-labs/pak-satpam", source: "github" });
+    expect(serverJson.repository).toEqual({ url: "https://github.com/hmrdkn-labs/pos-satpam", source: "github" });
     expect(serverJson.packages).toEqual([
       {
         registryType: "npm",
@@ -90,16 +89,21 @@ describe("release metadata", () => {
     const npmWorkflow = readText(".github/workflows/publish-npm.yml");
     expect(npmWorkflow).toMatch(/tags:\s*\n\s+- ['"]v\*\.\*\.\*['"]/);
     expect(npmWorkflow).toMatch(/id-token:\s*write/);
-    expect(npmWorkflow).toMatch(/npm publish --access public/);
+    expect(npmWorkflow).toMatch(/npm publish --access public --provenance/);
+    expect(npmWorkflow).toMatch(/steps\.exists\.outputs\.exists == 'true'/);
     expect(npmWorkflow).not.toMatch(/NODE_AUTH_TOKEN/);
 
     const registryWorkflow = readText(".github/workflows/publish-mcp-registry.yml");
     expect(registryWorkflow).toMatch(/validate-package-metadata\.mjs --require-built/);
-    expect(registryWorkflow).not.toMatch(/mcp-publisher publish/);
+    expect(registryWorkflow).toMatch(/mcp-publisher login github-oidc/);
+    expect(registryWorkflow).toMatch(/mcp-publisher publish server\.json/);
+    expect(registryWorkflow).toMatch(/steps\.npm\.outputs\.published == 'true'/);
+    expect(registryWorkflow).toMatch(/workflows:\s*\n\s+- publish-npm/);
 
     const containerWorkflow = readText(".github/workflows/publish-container.yml");
     expect(containerWorkflow).toMatch(/workflow_dispatch:/);
-    expect(containerWorkflow).toMatch(/if: github\.ref == 'refs\/heads\/main'/);
+    expect(containerWorkflow).toMatch(/tags:\s*\n\s+- ['"]v\*\.\*\.\*['"]/);
+    expect(containerWorkflow).toMatch(/if: github\.ref == 'refs\/heads\/main' \|\| \(github\.ref_type == 'tag'/);
     expect(containerWorkflow).toMatch(/provenance: mode=max/);
     expect(containerWorkflow).toMatch(/sbom: true/);
     expect(containerWorkflow).toContain(":${{ steps.metadata.outputs.version }}");
@@ -107,7 +111,7 @@ describe("release metadata", () => {
     expect(containerWorkflow).toContain(":sha-${{ github.sha }}");
     expect(containerWorkflow).toContain("verify-published-image.mjs");
     expect(containerWorkflow).not.toMatch(/^\s+pull_request:\s*$/m);
-    expect(containerWorkflow).not.toMatch(/^\s+push:\s*$/m);
+    expect(containerWorkflow).not.toMatch(/branches:/);
     expect(npmWorkflow).not.toMatch(/^\s+pull_request:\s*$/m);
     const validationWorkflow = readText(".github/workflows/validate.yml");
     expect(validationWorkflow).toContain("release:validate -- --require-built");
@@ -149,7 +153,7 @@ describe("release metadata", () => {
   });
 
   it("prepares a future version that passes metadata validation", () => {
-    const temporary = mkdtempSync(join(tmpdir(), "pak-satpam-release-prepare-"));
+    const temporary = mkdtempSync(join(tmpdir(), "pos-satpam-release-prepare-"));
     try {
       for (const relativePath of ["package.json", "package-lock.json", "server.json", "CHANGELOG.md", "scripts/prepare-release.mjs", "scripts/validate-package-metadata.mjs"]) {
         const destination = join(temporary, relativePath);
@@ -160,8 +164,8 @@ describe("release metadata", () => {
       cpSync(join(root, "src"), join(temporary, "src"), { recursive: true });
       writeFileSync(join(temporary, "release-notes.md"), "Release preparation smoke.\n");
 
-      execFileSync(process.execPath, ["scripts/prepare-release.mjs", "--version", "0.3.0", "--date", "2026-07-16", "--notes-file", "release-notes.md"], { cwd: temporary, stdio: "pipe" });
-      execFileSync(process.execPath, ["scripts/validate-package-metadata.mjs", "--tag", "v0.3.0"], { cwd: temporary, stdio: "pipe" });
+      execFileSync(process.execPath, ["scripts/prepare-release.mjs", "--version", "0.99.0", "--date", "2026-07-16", "--notes-file", "release-notes.md"], { cwd: temporary, stdio: "pipe" });
+      execFileSync(process.execPath, ["scripts/validate-package-metadata.mjs", "--tag", "v0.99.0"], { cwd: temporary, stdio: "pipe" });
     } finally {
       rmSync(temporary, { recursive: true, force: true });
     }

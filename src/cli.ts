@@ -19,6 +19,6 @@ process.once("SIGTERM", () => void shutdown());
 try {
   await server.connect(new StdioServerTransport());
 } catch {
-  process.stderr.write("observability-agent-mcp failed to start\n");
+  process.stderr.write("pos-satpam failed to start\n");
   process.exitCode = 1;
 }

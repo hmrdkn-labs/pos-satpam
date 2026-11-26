@@ -1,9 +1,9 @@
 services:
-  pak-satpam:
+  pos-satpam:
     build:
       context: ../../..
       dockerfile: Containerfile
-    image: observability-agent-mcp:example-v1-private-http
+    image: pos-satpam:example-v1-private-http
     platform: ${PLATFORM:-linux/amd64}
     command: ["dist/http-cli.js"]
     environment:

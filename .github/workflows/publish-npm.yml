@@ -31,11 +31,37 @@ jobs:
           package-manager-cache: false
       - name: Pin npm trusted publishing CLI
         run: npm install --global npm@11.5.1
-      - run: npm ci --ignore-scripts
-      - run: npm run build
-      - run: npm test
-      - run: npm run package:smoke
-      - run: |
+      # The first publish of a new package name is manual (the trusted
+      # publisher can only be attached to a package that already exists), so
+      # a tag pushed before that must not leave a red run.
+      - name: Check the package exists on npm
+        id: exists
+        run: |
+          set +e
+          output="$(npm view @hmrdkn-labs/pos-satpam name 2>&1)"
+          status=$?
+          set -e
+          if [ "$status" -eq 0 ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          elif grep -q 'E404' <<<"$output"; then
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=npm publish skipped::@hmrdkn-labs/pos-satpam is not on npm yet. The first publish is manual; later tags publish from this workflow with trusted publishing."
+          else
+            echo "$output" >&2
+            exit 1
+          fi
+      - if: steps.exists.outputs.exists == 'true'
+        run: npm ci --ignore-scripts
+      - if: steps.exists.outputs.exists == 'true'
+        run: npm run build
+      - if: steps.exists.outputs.exists == 'true'
+        run: npm test
+      - if: steps.exists.outputs.exists == 'true'
+        run: npm run package:smoke
+      - if: steps.exists.outputs.exists == 'true'
+        run: |
           npm run release:validate -- --require-built --tag "$GITHUB_REF_NAME"
-      - run: npm pack --dry-run
-      - run: npm publish --access public
+      - if: steps.exists.outputs.exists == 'true'
+        run: npm pack --dry-run
+      - if: steps.exists.outputs.exists == 'true'
+        run: npm publish --access public --provenance

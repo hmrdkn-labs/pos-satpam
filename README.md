@@ -1,22 +1,27 @@
-# Pak Satpam
+# Pos Satpam
 
-Pak Satpam is a bounded Model Context Protocol (MCP) server for operational AI
-agents. It turns allowlisted observability and CI provider data into small,
-typed, redacted evidence. The agent, chat gateway, credentials, and deployment
-policy remain outside the server.
+Ask why CI failed on GitHub Actions, Jenkins or Bitbucket, and your agent gets
+one capped, cited answer that says what it left out. It can't touch CI except
+for one rerun you approve.
 
-[![Validate](https://github.com/hmrdkn-labs/pak-satpam/actions/workflows/validate.yml/badge.svg)](https://github.com/hmrdkn-labs/pak-satpam/actions/workflows/validate.yml)
+Pos Satpam is a bounded Model Context Protocol (MCP) server for coding and
+operations agents. It turns allowlisted CI provider data into small, typed,
+redacted evidence. The agent, chat gateway, credentials, and deployment policy
+remain outside the server. Read-only Grafana and Prometheus-compatible
+observability tools are also included.
+
+[![Validate](https://github.com/hmrdkn-labs/pos-satpam/actions/workflows/validate.yml/badge.svg)](https://github.com/hmrdkn-labs/pos-satpam/actions/workflows/validate.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-2f6f4e.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D22-43853d.svg)](package.json)
 
 ## Product Boundary
 
 ~~~text
-AI client or Hermes
+AI client or chat gateway
         |
         | MCP stdio or private Streamable HTTP
         v
-Pak Satpam application
+Pos Satpam application
   protocol -> policy -> domain evidence -> redaction and bounds
         |                 |                  |
         v                 v                  v
@@ -41,57 +46,109 @@ The code follows these bounded contexts:
   normalization, dedupe, and signed internal delivery. It is not an MCP tool or
   a chat gateway.
 
-Pak Satpam does not run an LLM, receive chat messages, execute shell commands,
+Pos Satpam does not run an LLM, receive chat messages, execute shell commands,
 retrieve secrets, modify source, deploy workloads, mutate alerts or dashboards,
 or silently call another MCP server. The only write-capable path is GitHub's
 rerun-failed-jobs, and it requires a fresh one-time operator approval.
 
 ## Current Condition
 
-This documentation is based on the current committed Goal 19 source evidence.
-The durable evidence references are the direct provider-neutral SCM contract,
-the Bitbucket Data Center contract-only artifact at
-`docs/contracts/bitbucket-data-center-adapter.md`, and their local contract
-tests. The six SCM budgets, provider-native IDs, provider capability metadata,
-bounded telemetry/CI evidence, and observer dedupe/stale suppression are
-implemented and covered by local contract tests.
+What works today, checked 2026-11-26:
 
-This checkout is not proof that a public release or private deployment exists.
-This task performs no publish or deploy. Publication still requires an
-authorized release workflow and a recorded npm/OCI artifact digest. The private
-edge observer and Hermes route remain deployment-owner work. Private HTTP is a
-single-operator pre-release transport; public exposure is blocked until OAuth,
-authorization, Origin policy, ingress, and tenant isolation are implemented and
-verified. See the implementation status.
+- **From source:** clone, `npm ci`, `npm run build`, then run `node dist/cli.js`
+  over stdio. See [Install And Run](#install-and-run).
+- **GitHub Actions** is the provider that has been run against a live repository.
+  **Jenkins and Bitbucket Cloud** are implemented and covered by recorded
+  fixtures; they have not been exercised against a live server.
+- **Bitbucket Data Center** is a contract only. There is no adapter.
+- **Real CI data needs the private HTTP transport**, a YAML configuration and a
+  GitHub App. A read-only token over stdio is not available yet.
+- **The stdio server returns demo data.** See [Demo Data](#demo-data).
+- **No token-savings number is claimed.** It has not been measured.
+- **Nothing is published yet.** The npm package is published from v0.3.0, and
+  the image `ghcr.io/hmrdkn-labs/pos-satpam` appears at the next release. The
+  registry listing follows the npm package. Until then, use the source route.
+
+Private HTTP is a single-operator pre-release transport. Public exposure is
+blocked until OAuth, authorization, Origin policy, ingress and tenant isolation
+are implemented and verified. The private edge observer and chat-gateway route
+remain deployment-owner work. See the
+[implementation status](docs/implementation-status.md).
+
+## What The Approval Gate Does Not Cover
+
+The one write path, rerun of failed GitHub jobs, needs a fresh one-time operator
+approval. That gate holds only if the agent has no other CI-write credential.
+If the agent also has a shell with a `gh` token or any other token that can
+rerun, cancel or trigger workflows, it can bypass Pos Satpam. Give the agent a
+read-only credential, or none, outside this server.
 
 ## Install And Run
 
 Node.js 22 or newer is required.
 
-### npm package and stdio
-
-Install the package in the directory used by the MCP client:
+### From source (stdio)
 
 ~~~bash
-mkdir pak-satpam-runtime
-cd pak-satpam-runtime
-npm init -y
-npm install @hmrdkn-labs/pak-satpam
-npm exec -- pak-satpam
+git clone https://github.com/hmrdkn-labs/pos-satpam.git
+cd pos-satpam
+npm ci
+npm run build
+npm run inspector:list
 ~~~
 
-pak-satpam speaks MCP over stdio and uses the deterministic local observability
-provider. An MCP client should launch it as a child process, for example:
+The last command starts `node dist/cli.js` and prints the `tools/list` result.
+To use the server from an MCP client, launch it as a child process:
 
 ~~~json
 {
-  "command": "/absolute/path/to/pak-satpam-runtime/node_modules/.bin/pak-satpam",
-  "args": []
+  "mcpServers": {
+    "pos-satpam": {
+      "command": "node",
+      "args": ["/absolute/path/to/pos-satpam/dist/cli.js"]
+    }
+  }
 }
 ~~~
 
-The package also preserves the legacy executable aliases. See the CLI aliases
-and doctor section.
+### Demo Data
+
+`pos-satpam` over stdio has no provider configured. It serves a built-in fake
+provider: fixed example services, alerts and metrics. Every result says so, with
+`"providerClass": "fake"` and `"notice": "demo data: no provider configured"`.
+Do not treat stdio output as information about any real system. Real CI evidence
+needs the private HTTP transport below.
+
+### OCI image
+
+The image identity is:
+
+~~~text
+ghcr.io/hmrdkn-labs/pos-satpam@sha256:<immutable-digest>
+~~~
+
+This image is published by the next release workflow; the digest will be recorded
+in the release notes. Earlier images were published under a previous image name,
+recorded in the [changelog](CHANGELOG.md). Always pin by digest. The image is
+non-root, supports linux/amd64 and linux/arm64, and defaults to stdio:
+
+~~~bash
+docker run --rm -i ghcr.io/hmrdkn-labs/pos-satpam@sha256:<immutable-digest>
+~~~
+
+For private HTTP, run dist/http-cli.js, mount the configuration and secret
+files read-only, and pass the same environment variables shown below. The
+container entrypoint is node; the command selects the transport.
+
+### npm package
+
+Published from v0.3.0. Until that release the package does not exist on the
+registry and `npm install @hmrdkn-labs/pos-satpam` fails with E404. After
+publication:
+
+~~~bash
+npx @hmrdkn-labs/pos-satpam
+~~~
 
 ### Private Streamable HTTP
 
@@ -100,10 +157,11 @@ YAML runtime configuration and a bearer token in a regular 0600 file. Values
 are never put in the YAML, command line, MCP request, logs, or documentation.
 
 ~~~bash
-npm exec -- pak-satpam-http
+node dist/http-cli.js
 ~~~
 
-The HTTP process reads these environment variables:
+(`pos-satpam-http` after an npm install.) The HTTP process reads these
+environment variables:
 
 ~~~text
 MCP_HTTP_HOST=127.0.0.1
@@ -113,6 +171,9 @@ OBSERVABILITY_PROVIDER_CONFIG=/private/path/provider-config.yml
 MCP_TOKEN_FILE=/private/path/mcp-token
 GRAFANA_TOKEN_FILE=/private/path/grafana-token   # observability profiles only
 ~~~
+
+If a required variable is missing or the configuration is invalid, it prints one
+line to stderr and exits with status 2.
 
 The bearer file must be a regular 0600 file containing at least 16 bytes. The
 Grafana file follows the same rule. CI credentials, GitHub App material,
@@ -132,32 +193,10 @@ All MCP routes require an Authorization Bearer credential and an exact
 configured Host value. /mcp is absent for ci-only; /mcp/ci is absent when CI is
 disabled.
 
-### OCI image
-
-The canonical image identity is:
-
-~~~text
-ghcr.io/hmrdkn-labs/pak-satpam@sha256:<immutable-digest>
-~~~
-
-Use a digest recorded by an authorized release process. The image is non-root,
-supports linux/amd64 and linux/arm64, and defaults to stdio:
-
-~~~bash
-docker run --rm -i ghcr.io/hmrdkn-labs/pak-satpam@sha256:<immutable-digest>
-~~~
-
-For private HTTP, run dist/http-cli.js, mount the configuration and secret
-files read-only, and pass the same environment variables shown above. The
-container entrypoint is node; the command selects the transport.
-
-### Local source checkout
-
-For development or verification from this repository:
+### Development
 
 ~~~bash
 npm ci
-npm run build
 npm run validate
 ~~~
 
@@ -171,7 +210,7 @@ is a test-only failure/rerun reference and is not a production workflow.
 | observability-only | private HTTP | metrics, alerts, Grafana, policy | /mcp |
 | ci-only | private HTTP | one enabled CI provider and CI allowlist | /mcp/ci |
 | combined | private HTTP | observability and one enabled CI provider | /mcp and /mcp/ci |
-| stdio | local stdio | none; deterministic fake provider | process stdin/stdout |
+| stdio | local stdio | none; serves labelled demo data from a fake provider | process stdin/stdout |
 | private-http | example name for observability HTTP | same as observability-only | /mcp |
 
 The configuration parser requires version: 1. Observability profiles require
@@ -191,7 +230,7 @@ configuration or a Grafana credential.
 Provider identity is metadata, not a caller-selected URL. GitHub Actions emits
 github-actions and SCM emits github; Bitbucket Cloud emits bitbucket-cloud.
 Run and job identifiers remain provider-native strings, including numeric
-strings and supported UUID forms. Pak Satpam does not invent a cross-provider
+strings and supported UUID forms. Pos Satpam does not invent a cross-provider
 numeric ID.
 
 ## URL And Reverse-Proxy Semantics
@@ -264,21 +303,25 @@ Oversized or unavailable evidence is marked explicitly. Raw provider payloads,
 raw logs, credentials, and image bytes do not become normal logs or durable
 observer state.
 
-## CLI Aliases And Doctor
+## CLI Commands And Doctor
 
 | Command | Function |
 | --- | --- |
-| pak-satpam | current stdio server alias |
-| observability-agent-mcp | preserved stdio alias |
-| pak-satpam-http | private Streamable HTTP server |
-| pak-satpam-doctor | metadata-only runtime readiness diagnostic |
-| observability-agent-mcp-observer | optional observer companion |
-| observability-agent-mcp-approval / observability-agent-mcp-approve | operator approval CLI aliases |
+| pos-satpam | stdio server |
+| pos-satpam-http | private Streamable HTTP server |
+| pos-satpam-doctor | metadata-only runtime readiness diagnostic |
+| pos-satpam-observer | optional observer companion |
+| pos-satpam-approval | operator approval CLI |
+
+The commands are installed by the npm package from v0.3.0. From a source
+checkout, run the built files directly: `node dist/cli.js`,
+`node dist/http-cli.js`, `node dist/diagnostics/cli.js`,
+`node dist/observer/cli.js` and `node dist/approval-cli.js`.
 
 Run the doctor with paths, never with secret values:
 
 ~~~bash
-npx pak-satpam-doctor \
+node dist/diagnostics/cli.js \
   --config /private/path/provider-config.yml \
   --mcp-token /private/path/mcp-token \
   --grafana-token /private/path/grafana-token
@@ -292,7 +335,7 @@ metadata, and file readiness without printing file contents.
 1. Copy one profile example into a private deployment directory.
 2. Create regular 0600 files for each credential and approval key; do not commit
    them or put values in YAML.
-3. Run pak-satpam-doctor and fix every error before starting HTTP.
+3. Run pos-satpam-doctor and fix every error before starting HTTP.
 4. Start the server on loopback or a private interface with exact allowed Host
    values. Verify /healthz, bearer denial, MCP initialization, tool discovery,
    and one read-only call.
@@ -308,13 +351,13 @@ digest with the same private configuration and credential file paths, and repeat
 the health/MCP read-only checks. Do not delete observer state during a rollback
 unless the deployment owner has confirmed a schema migration; state is
 metadata-only and exists to prevent duplicate delivery. A rollback does not
-revert provider-side changes, and Pak Satpam has no deployment or source
+revert provider-side changes, and Pos Satpam has no deployment or source
 rollback authority.
 
-## Hermes And External AI Boundary
+## Chat Gateway And External AI Boundary
 
-Hermes, Tabby, or another AI client owns prompts, conversation state, and chat
-delivery. Pak Satpam returns evidence over MCP. The optional observer sends fresh
+A chat gateway, a desktop client, or another AI client owns prompts, conversation state, and chat
+delivery. Pos Satpam returns evidence over MCP. The optional observer sends fresh
 success or failure events to operator-configured internal routes using an HMAC
 over timestamp.body, a deterministic request ID, bounded retries, and no raw
 log lines. The analysis route may trigger an external agent to call Pak
@@ -333,7 +376,6 @@ execute commands, rerun jobs, or send Discord/chat messages.
 - [Client compatibility](docs/client-compatibility.md)
 - [Verification and contributor workflow](docs/test-strategy.md)
 - [Implementation status and blockers](docs/implementation-status.md)
-- [Goal 19 objective](docs/goals/goal-ci-event-loop-portable-release.md)
 - [Examples](examples/v1/README.md)
 
 ## License

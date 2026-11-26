@@ -193,7 +193,7 @@ export function resolveCIProviderUrl(endpoint: CIProviderEndpoint, requestPath =
 
   const requestUrl = isAbsoluteUrl(requestPath)
     ? new URL(requestPath)
-    : new URL(requestPath, "https://pak-satpam-request.invalid");
+    : new URL(requestPath, "https://pos-satpam-request.invalid");
   if (isAbsoluteUrl(requestPath) && requestUrl.origin !== normalized.origin) {
     throw new Error("provider request URL origin does not match the configured origin");
   }

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-image="${1:-observability-agent-mcp:local}"
-name="observability-agent-mcp-smoke-$$"
-volume="observability-agent-mcp-smoke-runtime-$$"
+image="${1:-pos-satpam:local}"
+name="pos-satpam-smoke-$$"
+volume="pos-satpam-smoke-runtime-$$"
 temporary=""
 operation_timeout_seconds="${CONTAINER_RUNTIME_OPERATION_TIMEOUT_SECONDS:-300}"
 cleanup_timeout_seconds="${CONTAINER_RUNTIME_CLEANUP_TIMEOUT_SECONDS:-30}"

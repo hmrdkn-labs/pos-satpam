@@ -20,9 +20,9 @@ COPY --from=build --chown=node:node /app/node_modules ./node_modules
 COPY --from=build --chown=node:node /app/dist ./dist
 
 USER node
-LABEL org.opencontainers.image.title="Pak Satpam" \
-      org.opencontainers.image.description="Bounded observability and approval-gated CI evidence for AI agents" \
-      org.opencontainers.image.source="https://github.com/hmrdkn-labs/pak-satpam" \
+LABEL org.opencontainers.image.title="Pos Satpam" \
+      org.opencontainers.image.description="Capped, cited CI-failure evidence for coding agents. Read-only, one approval-gated rerun." \
+      org.opencontainers.image.source="https://github.com/hmrdkn-labs/pos-satpam" \
       org.opencontainers.image.version="$VERSION" \
       org.opencontainers.image.revision="$VCS_REF"
 ENTRYPOINT ["node"]

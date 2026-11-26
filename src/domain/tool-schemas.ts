@@ -45,6 +45,7 @@ export const CommonEvidenceFieldsSchema = z
     schemaVersion: z.literal(SCHEMA_VERSION),
     observedAt: UtcTimestampSchema,
     providerClass: ProviderClassSchema,
+    notice: BoundedTextSchema.max(256).optional(),
     freshness: FreshnessSchema,
     truncated: z.boolean(),
     redactionsApplied: z.boolean(),

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-image="${1:-observability-agent-mcp:runtime-smoke}"
+image="${1:-pos-satpam:runtime-smoke}"
 platforms_string="${CONTAINER_RUNTIME_PLATFORMS:-linux/amd64 linux/arm64}"
-builder="${BUILDX_BUILDER:-pak-satpam-runtime-smoke}"
+builder="${BUILDX_BUILDER:-pos-satpam-runtime-smoke}"
 operation_timeout_seconds="${CONTAINER_RUNTIME_OPERATION_TIMEOUT_SECONDS:-300}"
 cleanup_timeout_seconds="${CONTAINER_RUNTIME_CLEANUP_TIMEOUT_SECONDS:-30}"
 version="$(node -p "require('./package.json').version")"

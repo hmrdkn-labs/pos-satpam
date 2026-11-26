@@ -18,7 +18,7 @@ interface ApprovalCliOptions {
   readonly ttlSeconds: number;
 }
 
-const USAGE = "Usage: observability-agent-mcp-approval --key-file PATH --repo OWNER/REPO --workflow FILE --run-id ID --run-attempt N --head-sha SHA --request-id ID --ttl-seconds SECONDS";
+const USAGE = "Usage: pos-satpam-approval --key-file PATH --repo OWNER/REPO --workflow FILE --run-id ID --run-attempt N --head-sha SHA --request-id ID --ttl-seconds SECONDS";
 
 try {
   const options = parseArguments(process.argv.slice(2));

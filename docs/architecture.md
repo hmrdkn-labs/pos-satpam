@@ -1,6 +1,6 @@
 # Architecture
 
-Pak Satpam is an MCP evidence boundary, not an agent platform. It accepts
+Pos Satpam is an MCP evidence boundary, not an agent platform. It accepts
 structured requests from an external AI client and returns bounded evidence
 from operator-configured providers.
 
@@ -18,7 +18,7 @@ from operator-configured providers.
 ## Runtime Shape
 
 ~~~text
-AI client / Hermes / desktop MCP client
+AI client / chat gateway / desktop MCP client
                  |
                  v
        stdio or private Streamable HTTP
@@ -55,7 +55,7 @@ credentials. The same application contract is used by the OCI image.
    binary or over-budget content, and records freshness/truncation.
 5. The server returns the version 1.0 evidence envelope. Provider text and
    rendered pixels remain untrusted data.
-6. The external agent decides how to explain evidence. Pak Satpam does not infer
+6. The external agent decides how to explain evidence. Pos Satpam does not infer
    causality or execute remediation.
 
 ## CI Event Loop
@@ -72,15 +72,15 @@ observation and does not trigger another action automatically.
 
 ## External Boundary
 
-Hermes or another AI client owns prompts, conversation state, and chat delivery.
+A chat gateway or another AI client owns prompts, conversation state, and chat delivery.
 The observer sends only signed, bounded internal events to operator-configured
 success and analysis routes. Those routes may cause an external agent to call
-Pak Satpam through MCP. No inbound MCP bearer token is forwarded to a provider,
-Hermes, or another MCP server.
+Pos Satpam through MCP. No inbound MCP bearer token is forwarded to a provider,
+a chat gateway, or another MCP server.
 
 ## Non-Responsibilities
 
-Pak Satpam does not own public webhook ingress, OAuth authorization servers,
+Pos Satpam does not own public webhook ingress, OAuth authorization servers,
 tenant management, Discord/chat gateways, LLM selection, secret management,
 shell execution, infrastructure mutation, deployment, alert mutation, dashboard
 mutation, workflow dispatch/cancel, or source writing. Those concerns belong to

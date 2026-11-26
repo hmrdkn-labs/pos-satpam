@@ -1,7 +1,7 @@
 # Client Compatibility
 
-Pak Satpam is consumed by MCP clients, not by one AI vendor. Codex, Claude,
-Hermes, Tabby, desktop clients, and other clients own their own prompts and
+Pos Satpam is consumed by MCP clients, not by one AI vendor. Codex, Claude,
+chat gateways, desktop clients, and other clients own their own prompts and
 conversation state.
 
 ## Current Surfaces

@@ -18,34 +18,33 @@ const packageLock = readJson("package-lock.json");
 const serverJson = readJson("server.json");
 const sourceVersion = readText("src/version.ts");
 const version = packageJson.version;
-const packageName = "@hmrdkn-labs/pak-satpam";
-const mcpName = "io.github.hmrdkn-labs/pak-satpam";
-const legacyBins = {
-  "observability-agent-mcp": "dist/cli.js",
-  "observability-agent-mcp-observer": "dist/observer/cli.js",
-  "observability-agent-mcp-approval": "dist/approval-cli.js",
-  "observability-agent-mcp-approve": "dist/approval-cli.js",
-  "pak-satpam-doctor": "dist/diagnostics/cli.js",
+const packageName = "@hmrdkn-labs/pos-satpam";
+const mcpName = "io.github.hmrdkn-labs/pos-satpam";
+const requiredBins = {
+  "pos-satpam": "dist/cli.js",
+  "pos-satpam-observer": "dist/observer/cli.js",
+  "pos-satpam-approval": "dist/approval-cli.js",
+  "pos-satpam-doctor": "dist/diagnostics/cli.js",
 };
 
 assert(packageJson.name === packageName, `package name must be ${packageName}`);
 assert(packageJson.mcpName === mcpName, `package mcpName must be ${mcpName}`);
 assert(isVersion(version), "package version must be a strict semantic version");
 assert(sourceVersion.match(/export const VERSION = "([^"]+)";/)?.[1] === version, "src/version.ts VERSION is inconsistent");
-assert(packageJson.repository?.url === "git+https://github.com/hmrdkn-labs/pak-satpam.git", "package repository is not canonical");
-assert(packageJson.homepage === "https://github.com/hmrdkn-labs/pak-satpam#readme", "package homepage is not canonical");
-assert(packageJson.bugs?.url === "https://github.com/hmrdkn-labs/pak-satpam/issues", "package issue URL is not canonical");
+assert(packageJson.repository?.url === "git+https://github.com/hmrdkn-labs/pos-satpam.git", "package repository is not canonical");
+assert(packageJson.homepage === "https://github.com/hmrdkn-labs/pos-satpam#readme", "package homepage is not canonical");
+assert(packageJson.bugs?.url === "https://github.com/hmrdkn-labs/pos-satpam/issues", "package issue URL is not canonical");
 
 assert(packageLock.name === packageName && packageLock.version === version, "package-lock root identity is inconsistent");
 assert(packageLock.packages?.[""].name === packageName, "package-lock root package name is inconsistent");
 assert(packageLock.packages?.[""].version === version, "package-lock root package version is inconsistent");
 
 const bins = packageJson.bin;
-for (const [name, target] of Object.entries(legacyBins)) {
-  assert(bins[name] === target, `legacy bin ${name} changed`);
+for (const [name, target] of Object.entries(requiredBins)) {
+  assert(bins[name] === target, `bin  changed`);
 }
-assert(bins["pak-satpam"] === "dist/cli.js", "pak-satpam must point to the stdio build");
-assert(bins["pak-satpam-http"] === "dist/http-cli.js", "pak-satpam-http must point to the HTTP build");
+assert(bins["pos-satpam"] === "dist/cli.js", "pos-satpam must point to the stdio build");
+assert(bins["pos-satpam-http"] === "dist/http-cli.js", "pos-satpam-http must point to the HTTP build");
 for (const [name, target] of Object.entries(bins)) {
   assert(target.startsWith("dist/") && target.endsWith(".js"), `bin ${name} must point to a dist JavaScript file`);
   const source = join(root, target.replace(/^dist\//, "src/").replace(/\.js$/, ".ts"));
@@ -59,7 +58,7 @@ assert(JSON.stringify(sortObject(packageLock.packages[""].bin)) === JSON.stringi
 
 assert(serverJson.$schema === "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json", "server.json schema is not canonical");
 assert(serverJson.name === mcpName, "server.json name does not match mcpName");
-assert(serverJson.repository?.url === "https://github.com/hmrdkn-labs/pak-satpam" && serverJson.repository?.source === "github", "server.json repository is not canonical");
+assert(serverJson.repository?.url === "https://github.com/hmrdkn-labs/pos-satpam" && serverJson.repository?.source === "github", "server.json repository is not canonical");
 assert(serverJson.version === version, "server.json version is inconsistent");
 assert(serverJson.packages?.length === 1, "server.json must declare exactly one package");
 const [serverPackage] = serverJson.packages;

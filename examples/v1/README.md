@@ -29,7 +29,7 @@ docker compose -f examples/v1/observability-only/compose.yml up --build
 
 Use the matching client configuration and operator-supplied bearer file. The
 runtime configuration contains only placeholder provider origins and allowlists.
-Run pak-satpam-doctor with private paths before exposing the client endpoint.
+Run pos-satpam-doctor with private paths before exposing the client endpoint.
 
 These examples are starting points, not deployment policy. Public exposure
 requires the separate OAuth, authorization, Origin, ingress, and tenant
