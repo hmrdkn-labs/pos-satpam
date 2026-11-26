@@ -68,5 +68,6 @@ if (args.includes("--raw")) {
     } finally {
       rmSync(temporary, { recursive: true, force: true });
     }
-  });
+    // Spawns a node verifier plus a node fake docker per call; under parallel load that exceeds the 5s default.
+  }, 60_000);
 });
